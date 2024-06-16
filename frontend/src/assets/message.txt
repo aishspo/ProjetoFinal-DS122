@@ -1,0 +1,136 @@
+import { Fragment, useEffect, useState } from "react";
+import Loading from "./Loading"; // Componente de carregamento, se necessário
+import { getAllFolders } from "@/services/folders";
+import { addDocument, deleteDocument, getAllDocuments } from "@/services/document/apiDocument";
+
+interface Folder {
+  id: number;
+  name: string;
+  documents: Document[];
+}
+
+interface Document {
+  id: number;
+  name: string;
+}
+
+export const Teste = () => {
+  const [folders, setFolders] = useState<Folder[]>([]);
+  const [currentFolderId, setCurrentFolderId] = useState<number | null>(null);
+  const [currentFolderDocuments, setCurrentFolderDocuments] = useState<Document[]>([]);
+  const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
+  const [documentName, setDocumentName] = useState<string>('');
+  const [documentFile, setDocumentFile] = useState<File | null>(null); // Adicionando estado para o arquivo do documento
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchFolders = async () => {
+      setIsLoading(true);
+      try {
+        const foldersData = await getAllFolders();
+        setFolders(foldersData);
+      } catch (error: any) {
+        console.error("Erro ao obter pastas:", error.message);
+        setError("Erro ao obter pastas.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchFolders();
+  }, []);
+
+  const fetchDocuments = async (folderId: number) => {
+    try {
+      const documentsData = await getAllDocuments(folderId);
+      setCurrentFolderDocuments(documentsData);
+      setCurrentFolderId(folderId);
+    } catch (error: any) {
+      console.error(`Erro ao obter documentos da pasta ${folderId}:`, error.message);
+      setError(`Erro ao obter documentos da pasta ${folderId}.`);
+    }
+  };
+
+  const handleAddDocument = async (folderId: number) => {
+    try {
+      if (!documentFile) {
+        throw new Error("Nenhum arquivo selecionado.");
+      }
+
+      const response = await addDocument(folderId, documentFile, documentName);
+      console.log("Documento adicionado com sucesso:", response);
+
+      // Atualiza a lista de documentos após a adição do novo documento
+      await fetchDocuments(folderId);
+    } catch (error: any) {
+      console.error("Erro ao adicionar documento:", error.message);
+      setError("Erro ao adicionar documento.");
+    }
+  };
+
+  const handleDeleteDocument = async (documentId: number) => {
+    try {
+      await deleteDocument(documentId);
+
+      if (selectedFolderId !== null) {
+        await fetchDocuments(selectedFolderId);
+      }
+    } catch (error: any) {
+      console.error(`Erro ao deletar documento ${documentId}:`, error.message);
+      setError(`Erro ao deletar documento ${documentId}.`);
+    }
+  };
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+  return (
+    <div>
+      <h1>Pastas do Estudante</h1>
+      <ul>
+        {folders.map((folder) => (
+          <li key={folder.id}>
+            <span>ID: {folder.id}</span>
+            <span>Nome: {folder.name}</span>
+            <button
+              onClick={() => {
+                fetchDocuments(folder.id);
+                setSelectedFolderId(folder.id); // Atualiza o estado da pasta selecionada
+              }}
+            >
+              Visualizar Documentos
+            </button>
+            {currentFolderId === folder.id && (
+              <ul>
+                {currentFolderDocuments.map((doc) => (
+                  <Fragment key={doc.id}>
+                    <li>{doc.name}</li>
+                    <button onClick={() => handleDeleteDocument(doc.id)}>Excluir</button>
+                  </Fragment>
+                ))}
+                <li>
+                  <input
+                    type="text"
+                    placeholder="Nome do Documento"
+                    value={documentName}
+                    onChange={(e) => setDocumentName(e.target.value)}
+                  />
+                  <input
+                    type="file"
+                    onChange={(e) => e.target.files && setDocumentFile(e.target.files[0])} // Atualiza o estado do arquivo do documento
+                  />
+                  <button onClick={() => handleAddDocument(folder.id)}>Adicionar Documento</button> {/* Botão para adicionar o documento */}
+                </li>
+              </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
