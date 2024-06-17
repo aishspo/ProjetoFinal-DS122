@@ -4,7 +4,7 @@ Alunos:
 <br>
 (GRR 20231010) Guilherme Arthur Nunes Menegari,
 <br>
-(GRR 2023) Julia Valeranovicz de Oliveira,
+(GRR 20231015) Julia Valeranovicz de Oliveira,
 <br>
 (GRR 20234188) Pedro Augusto Lemos,
 <br>
