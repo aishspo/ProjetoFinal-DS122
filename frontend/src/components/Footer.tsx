@@ -6,7 +6,7 @@ export const Footer = () => {
     <footer className="sticky top-[100vh] flex flex-row justify-evenly p-4 items-center">
       <small>© 2024 Copyright</small>
       <Button variant={"link"} size={"icon"}>
-        <a href="https://github.com/" target="_blank">
+        <a href="https://github.com/aishspo/ProjetoFinal-DS122" target="_blank">
           <GithubIcon />
         </a>
       </Button>
