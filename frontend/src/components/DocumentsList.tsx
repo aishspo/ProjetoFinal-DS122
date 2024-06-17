@@ -60,7 +60,7 @@ export const DocumentsList: React.FC<Props> = ({ onDocumentDelete }) => {
             </div>
 
             <Button variant="outline" size={"icon"}>
-              <a href={document.filePath} download>
+              <a href={document.filePath} download={document.name}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -78,12 +78,6 @@ export const DocumentsList: React.FC<Props> = ({ onDocumentDelete }) => {
               </a>
             </Button>
 
-            {/* Exemplo de como exibir informações adicionais */}
-            {/* <div>
-              <h1>Outras informações</h1>
-              <span>Id: {document.id}</span>
-              <span>Caminho: {document.filePath}</span>
-            </div> */}
           </li>
         ))}
       </ul>

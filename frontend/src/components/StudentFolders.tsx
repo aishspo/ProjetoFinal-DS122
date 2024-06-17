@@ -145,7 +145,7 @@ export const StudentFolders = () => {
   }
 
   return (
-    <div className="px-6 pt-4 mx-auto max-w-4xl">
+    <div className="pb-6 px-6 pt-4 mx-auto max-w-4xl">
       <h1>Pastas</h1>
 
       {fetchFoldersError && (
@@ -193,7 +193,7 @@ export const StudentFolders = () => {
 
                         <div className="flex space-x-2">
                           <Button variant="outline" size={"icon"}>
-                            <a href={doc.filePath} download>
+                            <a href={doc.filePath} download={doc.name}>
                               <DownloadIcon />
                             </a>
                           </Button>
